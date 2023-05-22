@@ -14,6 +14,8 @@ def emailsPerMonth():
     
     df = pd.read_sql_query(query, conn)
 
+    conn.close()
+
     month = df['month']
     count = df['message_count']
 
@@ -36,6 +38,8 @@ ORDER BY count DESC
 LIMIT 10'''
     
     df = pd.read_sql_query(query, conn)
+
+    conn.close()
 
     sender = df['sender']
     count = df['count']
@@ -63,6 +67,8 @@ LIMIT 10'''
     
     df = pd.read_sql_query(query, conn)
 
+    conn.close()
+
     recipient = df['rvalue']
     count = df['count']
 
@@ -86,6 +92,8 @@ GROUP BY rtype'''
     
     df = pd.read_sql_query(query, conn)
 
+    conn.close()
+
     rtype = df['rtype']
     count = df['count']
 
@@ -105,6 +113,8 @@ WHERE date BETWEEN '1979-12-30' AND '2002-12-31'
 ORDER BY date DESC'''
     
     df = pd.read_sql_query(query, conn)
+
+    conn.close()
 
     x = vect.fit_transform(df['subject'])
 
@@ -144,8 +154,9 @@ LEFT JOIN employeelist as e ON e.Email_id = ri.rvalue
 WHERE m.date BETWEEN '1979-12-30' AND '2002-12-31'
 '''
 
-    
     df = pd.read_sql_query(query, conn)
+
+    conn.close()
 
     type = ['Internal', 'External']
     count = [int(df['internal'].iloc[0]), int(df['external'].iloc[0])]
