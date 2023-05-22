@@ -2,6 +2,7 @@ import pandas as pd
 from matplotlib import pyplot as plt
 from db_conn import connect
 from sklearn.feature_extraction.text import CountVectorizer
+from sklearn.feature_extraction import text
 
 ####################################
 ## Number of Emails Sent Per Month
@@ -150,12 +151,10 @@ def typeDis():
 #######################################
 def keywords():
 
-    vect = CountVectorizer()
-
     conn = connect()
 
     # Query
-    query = '''SELECT date, subject
+    query = '''SELECT date, LOWER(subject) as subject
                 FROM message
                 WHERE date BETWEEN '1979-12-30' AND '2002-12-31'
                 ORDER BY date DESC'''
@@ -169,6 +168,12 @@ def keywords():
     ###############################
     # SOURCE: CHATGPT
     
+    # Define a list of stopwords
+    stopwords = list(text.ENGLISH_STOP_WORDS)
+
+    # CountVectorizer with stopwords filtering
+    vect = CountVectorizer(stop_words=stopwords)
+
     # Fit and transform the email messages
     x = vect.fit_transform(df['subject'])
 
