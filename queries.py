@@ -1,8 +1,6 @@
 import pandas as pd
 from matplotlib import pyplot as plt
 from db_conn import connect
-from sklearn.feature_extraction.text import CountVectorizer
-from sklearn.feature_extraction import text
 
 ####################################
 ## Number of Emails Sent Per Month
@@ -13,7 +11,7 @@ def emailsPerMonth():
     # Query
     query = '''SELECT strftime('%Y-%m', date) AS month, COUNT(*) as message_count
                 FROM message
-                WHERE month >= '1997-01' AND month <= '2002-12'
+                WHERE month >= '2001-01' AND month <= '2002-03'
                 GROUP BY month'''
     
     # Read the query and convert into dataframe
@@ -27,7 +25,7 @@ def emailsPerMonth():
     count = df['message_count']
 
     # Plot the line graph
-    plt.figure(figsize=(50,15))
+    plt.figure(figsize=(20,10))
     plt.title("Total Messages per Month")
     plt.ylabel("Messages")
     plt.xlabel("Month")
@@ -43,7 +41,7 @@ def topSenders():
     # Query
     query = '''SELECT COUNT(mid) as count, sender
                 FROM message
-                WHERE date BETWEEN '1979-12-30' AND '2002-12-31'
+                WHERE date BETWEEN '2001-09-01' AND '2001-12-31'
                 GROUP BY sender
                 ORDER BY count DESC
                 LIMIT 10'''
@@ -85,7 +83,7 @@ def topRecipients():
     # Query
     query = '''SELECT COUNT(rid) as count, rvalue
                 FROM recipientinfo NATURAL JOIN message
-                WHERE date BETWEEN '1979-12-30' AND '2002-12-31'
+                WHERE date BETWEEN '2001-09-01' AND '2001-12-31'
                 GROUP BY rvalue
                 ORDER BY count DESC
                 LIMIT 10'''
@@ -156,7 +154,7 @@ def keywords():
     # Query
     query = '''SELECT date, LOWER(subject) as subject
                 FROM message
-                WHERE date BETWEEN '1979-12-30' AND '2002-12-31'
+                WHERE date BETWEEN '2001-09-01' AND '2001-12-31'
                 ORDER BY date DESC'''
     
     # Read the query and convert into dataframe
@@ -165,39 +163,36 @@ def keywords():
     # Close connection
     conn.close()
 
-    ###############################
-    # SOURCE: CHATGPT
+    # Read csv of 1000 common action words and convert into dataframe
+    common_words_df = pd.read_csv('words.csv')
     
-    # Define a list of stopwords
-    stopwords = list(text.ENGLISH_STOP_WORDS)
+    # Initalise empty object
+    word_counts = {}
 
-    # CountVectorizer with stopwords filtering
-    vect = CountVectorizer(stop_words=stopwords)
+    # Iterate each subject line in list of subjects
+    for subject in df['subject']:
+        # Iterate each word in common 1000 action words
+        for word in common_words_df['words']:
+            # If the word exist in the subject
+            if word in subject:
+                # If the word is already being counted
+                if word in word_counts:
+                    word_counts[word] += 1
+                else:
+                    word_counts[word] = 1
 
-    # Fit and transform the email messages
-    x = vect.fit_transform(df['subject'])
+    # Create a dataframe from the object with two columns ['key', 'value']
+    word_counts_df = pd.DataFrame(list(word_counts.items()), columns=['word', 'count'])
 
-    # Get feature names 
-    keywords = vect.get_feature_names_out()
+    # Sort into descesding order based on counter
+    word_counts_df = word_counts_df.sort_values('count', ascending=False)
 
-    # Calculate the number of occured keyword
-    keywords_count = x.sum(axis=0)
-
-    # Create a dataframe with the keyword and number of occurances
-    df_keywords = pd.DataFrame({'Keyword': keywords, 'Count': keywords_count.tolist()[0]})
-
-    # Sort into descesding order
-    df_keywords = df_keywords.sort_values('Count', ascending=False)
-
-    # Grab the top 10
-    df_keywords_10 = df_keywords.head(10)
-
-    # END SOURCE
-    ################################
+    # Grab the top 10 most used words
+    top_10_df = word_counts_df.head(10)
 
     # Convert into array for x and y
-    words = df_keywords_10['Keyword'].values
-    count = df_keywords_10['Count'].values
+    words = top_10_df['word'].values
+    count = top_10_df['count'].values
 
     # Reorder into descending order for graph
     words = words[::-1]
@@ -228,7 +223,7 @@ def extAndInt():
                 JOIN message as m ON m.mid = ri.mid
                 JOIN employeelist as e2 ON e2.Email_id = m.sender
                 LEFT JOIN employeelist as e ON e.Email_id = ri.rvalue
-                WHERE m.date BETWEEN '1979-12-30' AND '2002-12-31'
+                WHERE m.date BETWEEN '2001-09-01' AND '2001-12-31'
                 '''
 
     # Read the query and convert into dataframe
