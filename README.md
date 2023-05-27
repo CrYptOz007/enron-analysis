@@ -1,17 +1,17 @@
 # Enron Analysis
-This program generates a business analysis report based on the Eron Database, which consists of approximately 500,000 internal emails that were made public following the collapse of the company in 2001. The analysis utilizes Python notebooks and various libraries including `sqlite3`, `pandas`, `scikit-learn`, and `matplotlib` to create a range of visualizations.
+This is a business analysis report based on the Eron Database, which consists of approximately 500,000 internal emails that were made public following the collapse of the company in 2001. The analysis utilizes Python notebooks and various libraries including `sqlite3`, `pandas` and `matplotlib` to create a range of visualizations.
 
 ## Requirements
 * Python 3.x
 * Jupyter Notebook
 
 ## Usage
-1. Open the `app.ipynb` notebook in Jupyter Notebook.
+1. Open the `business_report.ipynb` notebook in Jupyter Notebook.
 
 2. Run each cell in the notebook sequentially to generate the visualizations and perform the analysis.
 
 ## Visualizations
-The program generates the following visualizations:
+The report generates the following visualizations:
 
 1. **Email Traffic Over Time:** Shows the trend of email traffic per month, providing insights into the volume and patterns of communication.
 
@@ -25,8 +25,6 @@ The program generates the following visualizations:
 
 ## Important Note
 For the **Top Senders and Recipients** visualization, it's important to note that the calculation of email counts only considers individual email messages. It does not account for individual CCs, BCCs, or multiple recipients in the "To" field. Each email is treated as a single unit, regardless of the number of recipients involved.
-
-Additionally, all emails are filtered within the date range of '1979-12-30' to '2002-12-31'. Any emails outside this range are excluded from the analysis due to corrupt or invalid dates.
 
 ## License
 This program is licensed under the GNU 3.0 license. Please see the `LICENSE` file for more details.
